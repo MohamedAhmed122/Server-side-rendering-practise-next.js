@@ -1,7 +1,7 @@
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 
 export default function PostDetails({data}) {
-    const {query : { id }} = useRouter()
+    // const {query : { id }} = useRouter()
 
     return (
         <div>
@@ -11,7 +11,7 @@ export default function PostDetails({data}) {
 }
 
 
-export const getServerSideProps = async (context) =>{
+export const getStaticProps = async (context) =>{
 
     const res = await fetch(`https://www.sumydesigns.com/wp-json/wp/v2/posts/${context.params.id}`)
 
@@ -21,5 +21,22 @@ export const getServerSideProps = async (context) =>{
         props : { 
             data
         }
+    }
+}
+
+
+export const getStaticPaths = async (context) =>{
+
+    const res = await fetch(`https://www.sumydesigns.com/wp-json/wp/v2/posts/`)
+
+    const data = await res.json();
+
+    const ids = data.map(data =>  data.id);
+
+    const paths = ids.map((id) => ({ params: { id: id.toString() } }))
+
+    return{
+        paths,
+        fallback: false,
     }
 }
